@@ -5,26 +5,55 @@ import pygame
 from util import shut_down
 
 
-SCREEN_W = 600
-SCREEN_H = 600
+# Pygame constants
+SCREEN_W = 800
+SCREEN_H = 800
 FPS = 40
+
+# Player constants
+WHITE = 1
+BLACK = 0
 
 
 class Board(pygame.sprite.Sprite):
-    def __init__(self):
+    _board = [ [0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0],
+               [0, 0, 0, 0, 0, 0] ]
+
+    def __init__(self, position):
         pygame.sprite.Sprite.__init__(self)
 
         self.image = pygame.Surface((600, 600))
         self.image.fill(pygame.Color('red'))
-        self.rect = self.image.get_rect()
+        self.rect = self.image.get_rect(center=position)
+
+        # test...
+        self._board[0][2] = Marble(WHITE)
+        self._board[1][2] = Marble(BLACK)
+
+    def update(self):
+        for row in xrange(0, 6):
+            for col in xrange(0, 6):
+                if self._board[row][col]:
+                    if self._board[row][col].color == WHITE:
+                        pass
+                    else:
+                        pass
 
 
 class Marble(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, color):
         pygame.sprite.Sprite.__init__(self)
 
+        self.color = color
         self.image = pygame.Surface((80, 80))
-        self.image.fill(pygame.Color('white'))
+        if self.color == WHITE:
+            self.image.fill(pygame.Color('white'))
+        else:
+            self.image.fill(pygame.Color('black'))
         self.rect = self.image.get_rect()
 
 
@@ -38,8 +67,8 @@ def main():
     # Sprite groups
     all_sprites = pygame.sprite.RenderPlain()
 
-    board = Board()
-    test_marble = Marble()
+    board = Board(screen.get_rect().center)
+    test_marble = Marble(WHITE)
     all_sprites.add(board)
     all_sprites.add(test_marble)
 
