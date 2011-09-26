@@ -22,7 +22,7 @@ def shut_down(screen, message="Shutting everything down..."):
     the user some visual indication that things are closing down properly, and
     the game's not just hanging."""
     print message
-    print_text(screen, message, 25, pygame.Color('black'),
+    print_text(screen, message, 25, pygame.Color('red'),
                midbottom=screen.get_rect().midbottom)
     pygame.display.flip()
     sys.exit()
