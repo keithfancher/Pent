@@ -69,16 +69,12 @@ class Board(pygame.sprite.Sprite):
         """Loops through each column checking for 5 in a row. Returns WHITE or
         BLACK, or False if nobody has won."""
         for col in xrange(0, 6):
-            in_a_row = 1
-            for row in xrange(1, 6): # don't test first block
-                if self._board[row][col] and self._board[row - 1][col]:
-                    if self._board[row][col] == self._board[row - 1][col]:
-                        in_a_row += 1
-                    else:
-                        in_a_row = 1
-
-                    if in_a_row >= 5:
-                        return self._board[row][col]
+            column = [] # build a list of each column for easy checking
+            for row in xrange(0, 6):
+                column.append(self._board[row][col])
+            result = self._five_in_a_row(column)
+            if result:
+                return result
         return False
 
     def _check_diags_for_winner(self):
