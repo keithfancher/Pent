@@ -60,16 +60,9 @@ class Board(pygame.sprite.Sprite):
         """Loops through each row checking for 5 in a row. Returns WHITE or
         BLACK, or False if nobody has won."""
         for row in xrange(0, 6):
-            in_a_row = 1
-            for col in xrange(1, 6): # don't test first block
-                if self._board[row][col] and self._board[row][col - 1]:
-                    if self._board[row][col] == self._board[row][col - 1]:
-                        in_a_row += 1
-                    else:
-                        in_a_row = 1
-
-                    if in_a_row >= 5:
-                        return self._board[row][col]
+            result = self._five_in_a_row(self._board[row])
+            if result:
+                return result
         return False
 
     def _check_cols_for_winner(self):
@@ -89,8 +82,46 @@ class Board(pygame.sprite.Sprite):
         return False
 
     def _check_diags_for_winner(self):
-        """Checks all winning diagonal positions"""
-        # TODO
+        """Checks all six winning diagonal positions"""
+        # the two main diagonals
+        diag1 = []
+        diag2 = []
+        for i in xrange(0, 6):
+            diag1.append(self._board[i][i]) # left to right
+            diag2.append(self._board[5 - i][i]) # right to left
+        result = self._five_in_a_row(diag1)
+        if result:
+            return result
+        result = self._five_in_a_row(diag2)
+        if result:
+            return result
+
+        # the four minor diagonals
+        diag1 = []
+        diag2 = []
+        diag3 = []
+        diag4 = []
+        for i in xrange(0, 5):
+            # left to right
+            diag1.append(self._board[i + 1][i])
+            diag2.append(self._board[i][i + 1])
+
+            # right to left
+            diag3.append(self._board[4 - i][i])
+            diag4.append(self._board[5 - i][i + 1])
+        result = self._five_in_a_row(diag1)
+        if result:
+            return result
+        result = self._five_in_a_row(diag2)
+        if result:
+            return result
+        result = self._five_in_a_row(diag3)
+        if result:
+            return result
+        result = self._five_in_a_row(diag4)
+        if result:
+            return result
+
         return False
 
     def _draw_marble(self, color, row, col):
@@ -105,3 +136,16 @@ class Board(pygame.sprite.Sprite):
             position = (col * BLOCK_SIZE, row * BLOCK_SIZE)
             rect = surface.get_rect(topleft=position)
             self.image.blit(surface, rect)
+
+    def _five_in_a_row(self, in_list):
+        """Takes a list, and returns WHITE or BLACK if it finds five in a row
+        of that respective color. Returns False otherwise."""
+        str_list = map(str, in_list) # so we can use join() and str functions
+        joined = " ".join(str_list)
+        white_win = "%d %d %d %d %d" % (WHITE, WHITE, WHITE, WHITE, WHITE)
+        black_win = "%d %d %d %d %d" % (BLACK, BLACK, BLACK, BLACK, BLACK)
+        if joined.find(white_win) != -1:
+            return WHITE
+        if joined.find(black_win) != -1:
+            return BLACK
+        return False

@@ -90,7 +90,107 @@ class TestColWinner(unittest.TestCase):
 class TestDiagWinner(unittest.TestCase):
 
     def setUp(self):
-        pass
+        self.board = Board((400, 400))
+
+    def test_empty_board(self):
+        """Empty board should return False"""
+        self.assertFalse(self.board._check_diags_for_winner())
+
+    def test_main_diags_white(self):
+        """Basic winning positions for white should return WHITE"""
+        self.board._board[0] = [w, 0, 0, 0, 0, 0]
+        self.board._board[1] = [0, w, 0, 0, 0, 0]
+        self.board._board[2] = [0, 0, w, 0, 0, 0]
+        self.board._board[3] = [0, 0, 0, w, 0, w]
+        self.board._board[4] = [w, w, 0, 0, w, w]
+        self.board._board[5] = [w, w, 0, w, 0, w]
+        self.assertEqual(self.board._check_diags_for_winner(), w)
+        self.board._board[0] = [w, 0, 0, 0, 0, w]
+        self.board._board[1] = [0, 0, 0, 0, w, 0]
+        self.board._board[2] = [0, 0, 0, w, 0, 0]
+        self.board._board[3] = [0, 0, w, 0, 0, w]
+        self.board._board[4] = [w, w, 0, 0, 0, w]
+        self.board._board[5] = [w, w, 0, w, 0, 0]
+        self.assertEqual(self.board._check_diags_for_winner(), w)
+
+    def test_main_diags_black(self):
+        """Basic winning positions for black should return BLACK"""
+        self.board._board[0] = [b, 0, 0, 0, 0, 0]
+        self.board._board[1] = [0, b, 0, 0, 0, 0]
+        self.board._board[2] = [0, 0, b, 0, 0, 0]
+        self.board._board[3] = [0, 0, 0, b, 0, w]
+        self.board._board[4] = [w, w, 0, 0, b, w]
+        self.board._board[5] = [w, w, 0, w, 0, b]
+        self.assertEqual(self.board._check_diags_for_winner(), b)
+        self.board._board[0] = [0, 0, 0, 0, 0, b]
+        self.board._board[1] = [0, 0, 0, 0, b, 0]
+        self.board._board[2] = [0, 0, 0, b, 0, 0]
+        self.board._board[3] = [0, 0, b, 0, 0, w]
+        self.board._board[4] = [w, b, 0, 0, b, w]
+        self.board._board[5] = [b, w, 0, w, 0, b]
+        self.assertEqual(self.board._check_diags_for_winner(), b)
+
+    def test_minor_diags_white(self):
+        """Basic winning positions for white should return WHITE"""
+        self.board._board[0] = [0, 0, 0, 0, 0, 0]
+        self.board._board[1] = [w, 0, 0, 0, 0, 0]
+        self.board._board[2] = [0, w, 0, 0, 0, 0]
+        self.board._board[3] = [0, 0, w, 0, 0, w]
+        self.board._board[4] = [w, w, 0, w, 0, w]
+        self.board._board[5] = [w, w, 0, w, w, 0]
+        self.assertEqual(self.board._check_diags_for_winner(), w)
+        self.board._board[0] = [0, w, 0, 0, 0, 0]
+        self.board._board[1] = [0, 0, w, 0, 0, 0]
+        self.board._board[2] = [0, 0, 0, w, 0, 0]
+        self.board._board[3] = [0, 0, 0, 0, w, w]
+        self.board._board[4] = [w, w, 0, 0, 0, w]
+        self.board._board[5] = [w, w, 0, w, 0, 0]
+        self.assertEqual(self.board._check_diags_for_winner(), w)
+        self.board._board[0] = [0, 0, 0, 0, w, 0]
+        self.board._board[1] = [0, 0, 0, w, 0, 0]
+        self.board._board[2] = [0, 0, w, 0, 0, 0]
+        self.board._board[3] = [0, w, 0, 0, 0, w]
+        self.board._board[4] = [w, 0, 0, 0, 0, w]
+        self.board._board[5] = [w, 0, 0, w, 0, 0]
+        self.assertEqual(self.board._check_diags_for_winner(), w)
+        self.board._board[0] = [0, 0, 0, 0, 0, 0]
+        self.board._board[1] = [0, 0, 0, 0, 0, w]
+        self.board._board[2] = [0, 0, 0, 0, w, 0]
+        self.board._board[3] = [0, 0, 0, w, 0, w]
+        self.board._board[4] = [0, 0, w, 0, 0, w]
+        self.board._board[5] = [w, w, 0, w, 0, 0]
+        self.assertEqual(self.board._check_diags_for_winner(), w)
+
+    def test_minor_diags_black(self):
+        """Basic winning positions for black should return BLACK"""
+        self.board._board[0] = [0, 0, 0, 0, 0, 0]
+        self.board._board[1] = [b, 0, 0, 0, 0, 0]
+        self.board._board[2] = [0, b, 0, 0, 0, 0]
+        self.board._board[3] = [0, 0, b, 0, 0, w]
+        self.board._board[4] = [w, w, 0, b, 0, w]
+        self.board._board[5] = [w, w, 0, w, b, 0]
+        self.assertEqual(self.board._check_diags_for_winner(), b)
+        self.board._board[0] = [0, b, 0, 0, 0, 0]
+        self.board._board[1] = [0, 0, b, 0, 0, 0]
+        self.board._board[2] = [0, 0, 0, b, 0, 0]
+        self.board._board[3] = [0, 0, 0, 0, b, w]
+        self.board._board[4] = [w, w, 0, 0, 0, b]
+        self.board._board[5] = [w, w, 0, w, 0, 0]
+        self.assertEqual(self.board._check_diags_for_winner(), b)
+        self.board._board[0] = [0, 0, 0, 0, b, 0]
+        self.board._board[1] = [0, 0, 0, b, 0, 0]
+        self.board._board[2] = [0, 0, b, 0, 0, 0]
+        self.board._board[3] = [0, b, 0, 0, 0, w]
+        self.board._board[4] = [b, 0, 0, 0, 0, w]
+        self.board._board[5] = [w, 0, 0, w, 0, 0]
+        self.assertEqual(self.board._check_diags_for_winner(), b)
+        self.board._board[0] = [0, 0, 0, 0, 0, 0]
+        self.board._board[1] = [0, 0, 0, 0, 0, b]
+        self.board._board[2] = [0, 0, 0, 0, b, 0]
+        self.board._board[3] = [0, 0, 0, b, 0, w]
+        self.board._board[4] = [0, 0, b, 0, 0, w]
+        self.board._board[5] = [w, b, 0, w, 0, 0]
+        self.assertEqual(self.board._check_diags_for_winner(), b)
 
 
 if __name__ == "__main__":
