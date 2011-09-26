@@ -88,7 +88,17 @@ class Board(pygame.sprite.Sprite):
         return False
 
     def _check_cols_for_winner(self):
-        # TODO
+        """returns WHITE or BLACK or False"""
+        for col in xrange(0, 6):
+            in_a_row = 1
+            for row in xrange(1, 6): # don't test first block
+                if self._check_equality(row, col, row - 1, col):
+                    in_a_row += 1
+                else:
+                    in_a_row = 1
+
+                if in_a_row >= 5:
+                    return self._board[row][col].color
         return False
 
     def _check_diags_for_winner(self):
