@@ -3,8 +3,8 @@
 
 import unittest
 
-from pent import Board, Marble
-from pent import BLACK, WHITE
+from board import Board, Marble
+from settings import BLACK, WHITE
 
 
 class TestRowWinner(unittest.TestCase):
