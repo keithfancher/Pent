@@ -8,10 +8,9 @@ from settings import *
 
 
 def main():
-    """ My main() man!"""
     pygame.init()
     pygame.display.set_caption('Pent')
-    screen = pygame.display.set_mode([SCREEN_W, SCREEN_H])
+    screen = pygame.display.set_mode((SCREEN_W, SCREEN_H))
     clock = pygame.time.Clock()
 
     # Sprite groups
@@ -37,8 +36,12 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if board.make_move(current_player, pygame.mouse.get_pos()):
                     winner = board.winner()
-                    if winner:
-                        print "Somebody won I guess"
+                    if winner == TIE:
+                        print "Tie game..."
+                    elif winner == WHITE:
+                        print "White won..."
+                    elif winner == BLACK:
+                        print "Black won..."
                     current_player = -current_player
 
         # Clear screen

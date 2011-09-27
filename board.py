@@ -4,12 +4,6 @@ from settings import *
 
 
 class Board(pygame.sprite.Sprite):
-    _board = [ [0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0],
-               [0, 0, 0, 0, 0, 0] ]
 
     def __init__(self, position):
         """Construct..."""
@@ -18,6 +12,13 @@ class Board(pygame.sprite.Sprite):
         self.image = pygame.Surface((BOARD_SIZE, BOARD_SIZE))
         self.image.fill(pygame.Color('red'))
         self.rect = self.image.get_rect(center=position)
+
+        self._board = [ [0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0],
+                        [0, 0, 0, 0, 0, 0] ]
 
     def update(self):
         """Draws all the board's marbles"""
@@ -39,11 +40,40 @@ class Board(pygame.sprite.Sprite):
         return self._add_marble(color, row, col)
 
     def winner(self):
-        """Returns BLACK or WHITE or False"""
-        # TODO: also handle ties
-        return self._check_rows_for_winner() or\
-               self._check_cols_for_winner() or\
-               self._check_diags_for_winner()
+        """Returns BLACK, WHITE, TIE, or False"""
+        white_wins = black_wins = False
+        result = self._check_rows_for_winner()
+        if result == WHITE:
+            white_wins = True
+        elif result == BLACK:
+            black_wins = True
+        elif result == TIE:
+            return TIE # if we've already got two winners, no reason to go on
+
+        result = self._check_cols_for_winner()
+        if result == WHITE:
+            white_wins = True
+        elif result == BLACK:
+            black_wins = True
+        elif result == TIE:
+            return TIE
+
+        result = self._check_diags_for_winner()
+        if result == WHITE:
+            white_wins = True
+        elif result == BLACK:
+            black_wins = True
+        elif result == TIE:
+            return TIE
+
+        if white_wins and black_wins:
+            return TIE
+        elif white_wins:
+            return WHITE
+        elif black_wins:
+            return BLACK
+        else:
+            return False
 
     def _add_marble(self, color, row, col):
         """Attempts to add a marble to the board at the given row and column.
@@ -57,40 +87,69 @@ class Board(pygame.sprite.Sprite):
         return True
 
     def _check_rows_for_winner(self):
-        """Loops through each row checking for 5 in a row. Returns WHITE or
-        BLACK, or False if nobody has won."""
+        """Loops through each row checking for 5 in a row. Returns WHITE,
+        BLACK, TIE, or False if nobody has won."""
+        white_wins = black_wins = False
         for row in xrange(0, 6):
             result = self._five_in_a_row(self._board[row])
-            if result:
-                return result
-        return False
+            if result == WHITE:
+                white_wins = True
+            elif result == BLACK:
+                black_wins = True
+
+        if white_wins and black_wins:
+            return TIE
+        elif white_wins:
+            return WHITE
+        elif black_wins:
+            return BLACK
+        else:
+            return False
 
     def _check_cols_for_winner(self):
         """Loops through each column checking for 5 in a row. Returns WHITE or
         BLACK, or False if nobody has won."""
+        white_wins = black_wins = False
         for col in xrange(0, 6):
             column = [] # build a list of each column for easy checking
             for row in xrange(0, 6):
                 column.append(self._board[row][col])
             result = self._five_in_a_row(column)
-            if result:
-                return result
-        return False
+            if result == WHITE:
+                white_wins = True
+            elif result == BLACK:
+                black_wins = True
+
+        if white_wins and black_wins:
+            return TIE
+        elif white_wins:
+            return WHITE
+        elif black_wins:
+            return BLACK
+        else:
+            return False
 
     def _check_diags_for_winner(self):
         """Checks all six winning diagonal positions"""
+        white_wins = black_wins = False
+
         # the two main diagonals
         diag1 = []
         diag2 = []
         for i in xrange(0, 6):
             diag1.append(self._board[i][i]) # left to right
             diag2.append(self._board[5 - i][i]) # right to left
+
         result = self._five_in_a_row(diag1)
-        if result:
-            return result
+        if result == WHITE:
+            white_wins = True
+        elif result == BLACK:
+            black_wins = True
         result = self._five_in_a_row(diag2)
-        if result:
-            return result
+        if result == WHITE:
+            white_wins = True
+        elif result == BLACK:
+            black_wins = True
 
         # the four minor diagonals
         diag1 = []
@@ -105,20 +164,36 @@ class Board(pygame.sprite.Sprite):
             # right to left
             diag3.append(self._board[4 - i][i])
             diag4.append(self._board[5 - i][i + 1])
-        result = self._five_in_a_row(diag1)
-        if result:
-            return result
-        result = self._five_in_a_row(diag2)
-        if result:
-            return result
-        result = self._five_in_a_row(diag3)
-        if result:
-            return result
-        result = self._five_in_a_row(diag4)
-        if result:
-            return result
 
-        return False
+        result = self._five_in_a_row(diag1)
+        if result == WHITE:
+            white_wins = True
+        elif result == BLACK:
+            black_wins = True
+        result = self._five_in_a_row(diag2)
+        if result == WHITE:
+            white_wins = True
+        elif result == BLACK:
+            black_wins = True
+        result = self._five_in_a_row(diag3)
+        if result == WHITE:
+            white_wins = True
+        elif result == BLACK:
+            black_wins = True
+        result = self._five_in_a_row(diag4)
+        if result == WHITE:
+            white_wins = True
+        elif result == BLACK:
+            black_wins = True
+
+        if white_wins and black_wins:
+            return TIE
+        elif white_wins:
+            return WHITE
+        elif black_wins:
+            return BLACK
+        else:
+            return False
 
     def _draw_marble(self, color, row, col):
         """Blits a marble image onto the board's surface at given row and
@@ -145,3 +220,9 @@ class Board(pygame.sprite.Sprite):
         if joined.find(black_win) != -1:
             return BLACK
         return False
+
+    def _clear(self):
+        """Clears the board of marbles"""
+        for row in xrange(0, 6):
+            for col in xrange(0, 6):
+                self._board[row][col] = 0

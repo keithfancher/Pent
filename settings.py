@@ -6,6 +6,7 @@ FPS = 40
 # Player constants
 WHITE = 1
 BLACK = -1
+TIE = 2
 
 # In pixels, of course
 BOARD_SIZE = 600
