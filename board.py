@@ -9,10 +9,13 @@ class Board(pygame.sprite.Sprite):
         """Construct..."""
         pygame.sprite.Sprite.__init__(self)
 
-        self.image = pygame.Surface((BOARD_SIZE, BOARD_SIZE))
-        self.image.fill(pygame.Color('red'))
+        # load images
+        self.image = pygame.image.load("images/board.png").convert()
         self.rect = self.image.get_rect(center=position)
+        self.marble_b = pygame.image.load("images/black.png").convert_alpha()
+        self.marble_w = pygame.image.load("images/white.png").convert_alpha()
 
+        # the board array
         self._board = [ [0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0, 0],
                         [0, 0, 0, 0, 0, 0],
@@ -199,12 +202,11 @@ class Board(pygame.sprite.Sprite):
         """Blits a marble image onto the board's surface at given row and
         column. If color is 0, it just returns without doing anything."""
         if color:
-            surface = pygame.Surface((BLOCK_SIZE, BLOCK_SIZE))
             if color == WHITE:
-                surface.fill(pygame.Color('white'))
-            else:
-                surface.fill(pygame.Color('black'))
-            position = (col * BLOCK_SIZE, row * BLOCK_SIZE)
+                surface = self.marble_w
+            elif color == BLACK:
+                surface = self.marble_b
+            position = (col * BLOCK_SIZE + 20, row * BLOCK_SIZE + 20)
             rect = surface.get_rect(topleft=position)
             self.image.blit(surface, rect)
 
