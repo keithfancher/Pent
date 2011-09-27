@@ -9,6 +9,69 @@ from settings import WHITE as w # ditto
 from settings import TIE
 
 
+class TestAllEqual(unittest.TestCase):
+
+    def setUp(self):
+        self.board = Board((400, 400))
+
+    def test_all_equal_true(self):
+        """Lists with all equal values should return True"""
+        l = [w, w, w,]
+        self.assertTrue(self.board._all_equal(l))
+        l = [w, w, w, w, w, w, w, w]
+        self.assertTrue(self.board._all_equal(l))
+        l = [b]
+        self.assertTrue(self.board._all_equal(l))
+
+    def test_all_equal_false(self):
+        """Lists without all equal values should return False"""
+        l = [w, b, w,]
+        self.assertFalse(self.board._all_equal(l))
+        l = [w, 0, w, b, w, w, w, 0]
+        self.assertFalse(self.board._all_equal(l))
+        l = [b, 0]
+        self.assertFalse(self.board._all_equal(l))
+
+
+class TestFiveInARow(unittest.TestCase):
+
+    def setUp(self):
+        self.board = Board((400, 400))
+
+    def test_five_in_a_row_white(self):
+        """Lists with five+ whites in a row should return WHITE"""
+        l = [0, w, w, w, w, w]
+        self.assertEqual(self.board._five_in_a_row(l), w)
+        l = [w, w, w, w, w, 0]
+        self.assertEqual(self.board._five_in_a_row(l), w)
+        l = [w, w, w, w, w, w]
+        self.assertEqual(self.board._five_in_a_row(l), w)
+        l = [w, w, w, w, w] # len 5 arr
+        self.assertEqual(self.board._five_in_a_row(l), w)
+
+    def test_five_in_a_row_black(self):
+        """Lists with five+ blacks in a row should return BLACK"""
+        l = [0, b, b, b, b, b]
+        self.assertEqual(self.board._five_in_a_row(l), b)
+        l = [b, b, b, b, b, 0]
+        self.assertEqual(self.board._five_in_a_row(l), b)
+        l = [b, b, b, b, b, b]
+        self.assertEqual(self.board._five_in_a_row(l), b)
+        l = [b, b, b, b, b] # len 5
+        self.assertEqual(self.board._five_in_a_row(l), b)
+
+    def test_no_five_in_a_row(self):
+        """Lists without five in a row should return False"""
+        l = [w, b, w, w, w, w]
+        self.assertFalse(self.board._five_in_a_row(l))
+        l = [w, b, w, w] # array too short
+        self.assertFalse(self.board._five_in_a_row(l))
+        l = [w, b, w, w, w, w, 0, 0] # too long
+        self.assertFalse(self.board._five_in_a_row(l))
+        l = [0, 0, 0, 0, 0, 0] # five 0s in a row
+        self.assertFalse(self.board._five_in_a_row(l))
+
+
 class TestRowWinner(unittest.TestCase):
 
     def setUp(self):
@@ -40,10 +103,12 @@ class TestRowWinner(unittest.TestCase):
 
     def test_non_winning_positions(self):
         """Various non-winning positions should return False"""
-        self.board._board[0] = [w, w, w, b, b, b]
+        self.board._board[0] = [w, b, w, w, w, w]
         self.board._board[1] = [b, w, w, b, b, b]
         self.board._board[2] = [b, w, b, b, b, b]
-        self.board._board[3] = [w, w, w, w, 0, w]
+        self.board._board[3] = [0, 0, 0, w, 0, 0]
+        self.board._board[4] = [w, w, 0, 0, 0, w]
+        self.board._board[5] = [w, w, 0, w, 0, 0]
         self.assertFalse(self.board._check_rows_for_winner())
 
 
@@ -61,7 +126,7 @@ class TestColWinner(unittest.TestCase):
         for row in xrange(1, 6):
             self.board._board[row][0] = w
         self.assertEqual(self.board._check_cols_for_winner(), w)
-        self.board._clear()
+        self.board.clear()
         for row in xrange(0, 5):
             self.board._board[row][5] = w
         self.assertEqual(self.board._check_cols_for_winner(), w)
@@ -71,7 +136,7 @@ class TestColWinner(unittest.TestCase):
         for row in xrange(1, 6):
             self.board._board[row][0] = b
         self.assertEqual(self.board._check_cols_for_winner(), b)
-        self.board._clear()
+        self.board.clear()
         for row in xrange(0, 5):
             self.board._board[row][5] = b
         self.assertEqual(self.board._check_cols_for_winner(), b)

@@ -24,7 +24,7 @@ class Board(pygame.sprite.Sprite):
                         [0, 0, 0, 0, 0, 0] ]
 
     def update(self):
-        """Draws all the board's marbles"""
+        """Draws all the board's marbles, called every frame."""
         for row in xrange(0, 6):
             for col in xrange(0, 6):
                 self._draw_marble(self._board[row][col], row, col)
@@ -41,6 +41,12 @@ class Board(pygame.sprite.Sprite):
         col = real_x / BLOCK_SIZE
         row = real_y / BLOCK_SIZE
         return self._add_marble(color, row, col)
+
+    def clear(self):
+        """Clears the board of marbles"""
+        for row in xrange(0, 6):
+            for col in xrange(0, 6):
+                self._board[row][col] = 0
 
     def winner(self):
         """Returns BLACK, WHITE, TIE, or False"""
@@ -88,6 +94,18 @@ class Board(pygame.sprite.Sprite):
 
         self._board[row][col] = color # add to board array
         return True
+
+    def _draw_marble(self, color, row, col):
+        """Blits a marble image onto the board's surface at given row and
+        column. If color is 0, it just returns without doing anything."""
+        if color:
+            if color == WHITE:
+                surface = self.marble_w
+            elif color == BLACK:
+                surface = self.marble_b
+            position = (col * BLOCK_SIZE + 30, row * BLOCK_SIZE + 30)
+            rect = surface.get_rect(topleft=position)
+            self.image.blit(surface, rect)
 
     def _check_rows_for_winner(self):
         """Loops through each row checking for 5 in a row. Returns WHITE,
@@ -198,33 +216,28 @@ class Board(pygame.sprite.Sprite):
         else:
             return False
 
-    def _draw_marble(self, color, row, col):
-        """Blits a marble image onto the board's surface at given row and
-        column. If color is 0, it just returns without doing anything."""
-        if color:
-            if color == WHITE:
-                surface = self.marble_w
-            elif color == BLACK:
-                surface = self.marble_b
-            position = (col * BLOCK_SIZE + 30, row * BLOCK_SIZE + 30)
-            rect = surface.get_rect(topleft=position)
-            self.image.blit(surface, rect)
-
     def _five_in_a_row(self, in_list):
         """Takes a list, and returns WHITE or BLACK if it finds five in a row
-        of that respective color. Returns False otherwise."""
-        str_list = map(str, in_list) # so we can use join() and str functions
-        joined = " ".join(str_list)
-        white_win = "%d %d %d %d %d" % (WHITE, WHITE, WHITE, WHITE, WHITE)
-        black_win = "%d %d %d %d %d" % (BLACK, BLACK, BLACK, BLACK, BLACK)
-        if joined.find(white_win) != -1:
-            return WHITE
-        if joined.find(black_win) != -1:
-            return BLACK
+        of that respective color. Returns False/0 otherwise. Note that this is
+        a very Pentago-specific way of checking -- it only works for arrays of
+        length 5 or 6, using array slicing."""
+        if len(in_list) == 5:
+            if self._all_equal(in_list):
+                return in_list[0]
+
+        if len(in_list) == 6:
+            if self._all_equal(in_list[:4]):
+                return in_list[0]
+            if self._all_equal(in_list[1:]):
+                return in_list[1]
+
         return False
 
-    def _clear(self):
-        """Clears the board of marbles"""
-        for row in xrange(0, 6):
-            for col in xrange(0, 6):
-                self._board[row][col] = 0
+    def _all_equal(self, in_list):
+        """Li'l helper function that returns True if every element in a list is
+        the same, False otherwise."""
+        if in_list:
+            filtered = filter(lambda x: x == in_list[0], in_list)
+            if len(filtered) == len(in_list):
+                return True
+        return False
