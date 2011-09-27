@@ -206,7 +206,7 @@ class Board(pygame.sprite.Sprite):
                 surface = self.marble_w
             elif color == BLACK:
                 surface = self.marble_b
-            position = (col * BLOCK_SIZE + 20, row * BLOCK_SIZE + 20)
+            position = (col * BLOCK_SIZE + 30, row * BLOCK_SIZE + 30)
             rect = surface.get_rect(topleft=position)
             self.image.blit(surface, rect)
 

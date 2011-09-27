@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import unittest
+import pygame
 
 from board import Board
 from settings import BLACK as b # makes life easier below
@@ -239,4 +240,8 @@ class TestTieGame(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    # Have to init pygame or we can't create a Board object
+    pygame.init()
+    pygame.display.set_mode((1, 1))
+
     unittest.main()
