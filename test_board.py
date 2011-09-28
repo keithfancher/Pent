@@ -4,9 +4,9 @@ import unittest
 import pygame
 
 from board import Board
+from settings import *
 from settings import BLACK as b # makes life easier below
 from settings import WHITE as w # ditto
-from settings import TIE
 
 
 class TestAllEqual(unittest.TestCase):
@@ -302,6 +302,112 @@ class TestTieGame(unittest.TestCase):
         self.board._board[4] = [0, 0, 0, 0, w, 0]
         self.board._board[5] = [b, b, b, b, b, 0]
         self.assertEqual(self.board.winner(), TIE)
+
+
+class QuadTest(unittest.TestCase):
+
+    def setUp(self):
+        self.board = Board((400, 400))
+        self.board._board[0] = [0, 0, 0, b, b, b]
+        self.board._board[1] = [0, 0, 0, b, b, b]
+        self.board._board[2] = [0, 0, 0, b, b, b]
+        self.board._board[3] = [w, w, w, w, b, b]
+        self.board._board[4] = [w, w, w, b, 0, b]
+        self.board._board[5] = [w, w, w, b, b, w]
+
+    def test_get_quad(self):
+        """get_quad should return the proper 3x3 array"""
+        ret_quad = [ [b, b, b],
+                     [b, b, b],
+                     [b, b, b] ]
+        self.assertEqual(self.board._get_quad(TOPRIGHT), ret_quad)
+        ret_quad = [ [0, 0, 0],
+                     [0, 0, 0],
+                     [0, 0, 0] ]
+        self.assertEqual(self.board._get_quad(TOPLEFT), ret_quad)
+        ret_quad = [ [w, w, w],
+                     [w, w, w],
+                     [w, w, w] ]
+        self.assertEqual(self.board._get_quad(BOTLEFT), ret_quad)
+        ret_quad = [ [w, b, b],
+                     [b, 0, b],
+                     [b, b, w] ]
+        self.assertEqual(self.board._get_quad(BOTRIGHT), ret_quad)
+
+    def test_set_quad(self):
+        """set_quad should set the proper 3x3 subarray of the board"""
+        target = [ [w, w, w, b, b, b],
+                   [w, w, w, b, b, b],
+                   [w, w, w, b, b, b],
+                   [w, w, w, w, b, b],
+                   [w, w, w, b, 0, b],
+                   [w, w, w, b, b, w] ]
+        set_quad = [ [w, w, w],
+                     [w, w, w],
+                     [w, w, w] ]
+        self.board._set_quad(TOPLEFT, set_quad)
+        self.assertEqual(self.board._board, target)
+        target = [ [w, w, w, w, w, w],
+                   [w, w, w, w, w, w],
+                   [w, w, w, w, w, w],
+                   [w, w, w, w, b, b],
+                   [w, w, w, b, 0, b],
+                   [w, w, w, b, b, w] ]
+        self.board._set_quad(TOPRIGHT, set_quad)
+        self.assertEqual(self.board._board, target)
+        target = [ [w, w, w, w, w, w],
+                   [w, w, w, w, w, w],
+                   [w, w, w, w, w, w],
+                   [w, w, w, w, w, w],
+                   [w, w, w, w, w, w],
+                   [w, w, w, w, w, w] ]
+        self.board._set_quad(BOTRIGHT, set_quad)
+        self.assertEqual(self.board._board, target)
+        set_quad = [ [0, 0, 0],
+                     [0, 0, 0],
+                     [0, 0, 0] ]
+        target = [ [w, w, w, w, w, w],
+                   [w, w, w, w, w, w],
+                   [w, w, w, w, w, w],
+                   [0, 0, 0, w, w, w],
+                   [0, 0, 0, w, w, w],
+                   [0, 0, 0, w, w, w] ]
+        self.board._set_quad(BOTLEFT, set_quad)
+        self.assertEqual(self.board._board, target)
+
+
+class RotationTest(unittest.TestCase):
+
+    def setUp(self):
+        self.board = Board((400, 400))
+        self.board._board = [ [w, 0, 0, 0, b, 0],
+                              [0, w, 0, 0, 0, 0],
+                              [0, 0, w, 0, b, 0],
+                              [0, 0, 0, w, w, w],
+                              [0, w, 0, w, w, 0],
+                              [0, 0, 0, w, 0, 0] ]
+
+    def test_rotate_clockwise(self):
+        """rotate_quad should rotate the given quad clockwise"""
+        target = [ [w, 0, 0, 0, 0, 0],
+                   [0, w, 0, b, 0, b],
+                   [0, 0, w, 0, 0, 0],
+                   [0, 0, 0, w, w, w],
+                   [0, w, 0, w, w, 0],
+                   [0, 0, 0, w, 0, 0] ]
+        self.board.rotate_quad(TOPRIGHT, CLOCKWISE)
+        self.assertEqual(self.board._board, target)
+
+    def test_rotate_counterclockwise(self):
+        """rotate_quad should rotate the given quad clockwise"""
+        target = [ [w, 0, 0, 0, b, 0],
+                   [0, w, 0, 0, 0, 0],
+                   [0, 0, w, 0, b, 0],
+                   [0, 0, 0, w, 0, 0],
+                   [0, w, 0, w, w, 0],
+                   [0, 0, 0, w, w, w] ]
+        self.board.rotate_quad(BOTRIGHT, COUNTERCLOCKWISE)
+        self.assertEqual(self.board._board, target)
 
 
 if __name__ == "__main__":

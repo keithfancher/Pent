@@ -25,8 +25,8 @@ class Board(pygame.sprite.Sprite):
 
     def update(self):
         """Draws all the board's marbles, called every frame."""
-        for row in xrange(0, 6):
-            for col in xrange(0, 6):
+        for row in xrange(6):
+            for col in xrange(6):
                 self._draw_marble(self._board[row][col], row, col)
 
     def make_move(self, color, mouse_coordinates):
@@ -44,8 +44,8 @@ class Board(pygame.sprite.Sprite):
 
     def clear(self):
         """Clears the board of marbles"""
-        for row in xrange(0, 6):
-            for col in xrange(0, 6):
+        for row in xrange(6):
+            for col in xrange(6):
                 self._board[row][col] = 0
 
     def winner(self):
@@ -84,6 +84,18 @@ class Board(pygame.sprite.Sprite):
         else:
             return False
 
+    def rotate_quad(self, quad, direction):
+        """Rotates the given quad in the given direction by 90 degrees"""
+        in_quad = self._get_quad(quad)
+
+        if direction == CLOCKWISE:
+            self._set_quad(quad, self._rotate_matrix_clockwise(in_quad))
+        elif direction == COUNTERCLOCKWISE:
+            # haha! just clockwise thrice!
+            for i in xrange(3):
+                in_quad = self._rotate_matrix_clockwise(in_quad)
+            self._set_quad(quad, in_quad)
+
     def _add_marble(self, color, row, col):
         """Attempts to add a marble to the board at the given row and column.
         Returns True if position is valid, False otherwise"""
@@ -111,7 +123,7 @@ class Board(pygame.sprite.Sprite):
         """Loops through each row checking for 5 in a row. Returns WHITE,
         BLACK, TIE, or False if nobody has won."""
         white_wins = black_wins = False
-        for row in xrange(0, 6):
+        for row in xrange(6):
             result = self._five_in_a_row(self._board[row])
             if result == WHITE:
                 white_wins = True
@@ -131,9 +143,9 @@ class Board(pygame.sprite.Sprite):
         """Loops through each column checking for 5 in a row. Returns WHITE or
         BLACK, or False if nobody has won."""
         white_wins = black_wins = False
-        for col in xrange(0, 6):
+        for col in xrange(6):
             column = [] # build a list of each column for easy checking
-            for row in xrange(0, 6):
+            for row in xrange(6):
                 column.append(self._board[row][col])
             result = self._five_in_a_row(column)
             if result == WHITE:
@@ -157,7 +169,7 @@ class Board(pygame.sprite.Sprite):
         # the two main diagonals
         diag1 = []
         diag2 = []
-        for i in xrange(0, 6):
+        for i in xrange(6):
             diag1.append(self._board[i][i]) # left to right
             diag2.append(self._board[5 - i][i]) # right to left
 
@@ -177,7 +189,7 @@ class Board(pygame.sprite.Sprite):
         diag2 = []
         diag3 = []
         diag4 = []
-        for i in xrange(0, 5):
+        for i in xrange(5):
             # left to right
             diag1.append(self._board[i + 1][i])
             diag2.append(self._board[i][i + 1])
@@ -241,3 +253,50 @@ class Board(pygame.sprite.Sprite):
             if len(filtered) == len(in_list):
                 return True
         return False
+
+    def _rotate_matrix_clockwise(self, matrix):
+        """Helper function that rotates a given matrix 90 degrees clockwise"""
+        m = zip(*matrix[::-1]) # fucking magic... thanks norvig!
+        return map(list, m) # 'cause zip() returns tuples
+
+    def _get_quad(self, quad):
+        """Returns a 3x3 matrix (list of lists) that is the given quad of the
+        Pentago board."""
+        return_quad = []
+
+        if quad == TOPRIGHT:
+            return_quad.append(self._board[0][3:])
+            return_quad.append(self._board[1][3:])
+            return_quad.append(self._board[2][3:])
+        elif quad == TOPLEFT:
+            return_quad.append(self._board[0][:3])
+            return_quad.append(self._board[1][:3])
+            return_quad.append(self._board[2][:3])
+        elif quad == BOTLEFT:
+            return_quad.append(self._board[3][:3])
+            return_quad.append(self._board[4][:3])
+            return_quad.append(self._board[5][:3])
+        elif quad == BOTRIGHT:
+            return_quad.append(self._board[3][3:])
+            return_quad.append(self._board[4][3:])
+            return_quad.append(self._board[5][3:])
+        return return_quad
+
+    def _set_quad(self, quad, matrix):
+        """Sets the given quad on the board to the given matrix."""
+        if quad == TOPRIGHT:
+            self._board[0][3:] = matrix[0]
+            self._board[1][3:] = matrix[1]
+            self._board[2][3:] = matrix[2]
+        if quad == TOPLEFT:
+            self._board[0][:3] = matrix[0]
+            self._board[1][:3] = matrix[1]
+            self._board[2][:3] = matrix[2]
+        if quad == BOTLEFT:
+            self._board[3][:3] = matrix[0]
+            self._board[4][:3] = matrix[1]
+            self._board[5][:3] = matrix[2]
+        if quad == BOTRIGHT:
+            self._board[3][3:] = matrix[0]
+            self._board[4][3:] = matrix[1]
+            self._board[5][3:] = matrix[2]
