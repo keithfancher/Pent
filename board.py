@@ -238,7 +238,7 @@ class Board(pygame.sprite.Sprite):
                 return in_list[0]
 
         if len(in_list) == 6:
-            if self._all_equal(in_list[:4]):
+            if self._all_equal(in_list[:5]):
                 return in_list[0]
             if self._all_equal(in_list[1:]):
                 return in_list[1]

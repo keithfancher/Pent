@@ -64,6 +64,8 @@ class TestFiveInARow(unittest.TestCase):
         """Lists without five in a row should return False"""
         l = [w, b, w, w, w, w]
         self.assertFalse(self.board._five_in_a_row(l))
+        l = [w, w, w, w, b, b]
+        self.assertFalse(self.board._five_in_a_row(l))
         l = [w, b, w, w] # array too short
         self.assertFalse(self.board._five_in_a_row(l))
         l = [w, b, w, w, w, w, 0, 0] # too long
